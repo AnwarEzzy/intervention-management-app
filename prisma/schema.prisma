@@ -1,0 +1,150 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  USER
+  TECHNICIAN_N1
+  TECHNICIAN_N2
+  TECHNICIAN_N3
+}
+
+enum InterventionStatus {
+  EN_ATTENTE
+  EN_COURS
+  TERMINEE
+  ANNULEE
+}
+
+enum InterventionPriority {
+  BASSE
+  NORMALE
+  HAUTE
+  CRITIQUE
+}
+
+enum UserStatus {
+  ACTIF
+  INACTIF
+}
+
+model User {
+  id            String        @id @default(cuid())
+  nom           String
+  prenom        String
+  email         String        @unique
+  telephone     String?
+  role          UserRole
+  specialite    String?
+  statut        UserStatus    @default(ACTIF)
+  motDePasse    String
+  dateCreation  DateTime      @default(now())
+  dateModification DateTime   @updatedAt
+
+  // Relations
+  interventionsCreees Intervention[] @relation("EmployeInterventions")
+  interventionsTechnicien Intervention[] @relation("TechnicienInterventions")
+  interventionsAdmin Intervention[] @relation("AdminInterventions")
+  logs Log[]
+  notifications Notification[]
+
+  @@map("users")
+}
+
+model Intervention {
+  id            String              @id @default(cuid())
+  titre         String
+  description   String
+  priorite      InterventionPriority
+  equipement    String?
+  dateEcheance  DateTime?
+  statut        InterventionStatus  @default(EN_ATTENTE)
+  dateCreation  DateTime            @default(now())
+  dateCloture   DateTime?
+  dateModification DateTime          @updatedAt
+
+  // Relations
+  employeId     String
+  employe       User                @relation("EmployeInterventions", fields: [employeId], references: [id])
+  
+  technicienId  String?
+  technicien    User?               @relation("TechnicienInterventions", fields: [technicienId], references: [id])
+  
+  adminId       String?
+  admin         User?               @relation("AdminInterventions", fields: [adminId], references: [id])
+
+  logs Log[]
+  notifications Notification[]
+
+  @@map("interventions")
+}
+
+model Statistique {
+  id                    String   @id @default(cuid())
+  mois                  Int
+  annee                 Int
+  interventionsParMois  Int      @default(0)
+  tempsMoyenResolution  Float?   // en heures
+  tauxResolution        Float    @default(0) // pourcentage
+  interventionsTerminees Int     @default(0)
+  interventionsEnCours  Int      @default(0)
+  dateCreation          DateTime @default(now())
+
+  @@unique([mois, annee])
+  @@map("statistiques")
+}
+
+model Log {
+  id            String   @id @default(cuid())
+  action        String
+  details       String?
+  dateCreation  DateTime @default(now())
+  
+  // Relations
+  userId        String?
+  user          User?    @relation(fields: [userId], references: [id])
+  
+  interventionId String?
+  intervention  Intervention? @relation(fields: [interventionId], references: [id])
+
+  @@map("logs")
+}
+
+enum NotificationType {
+  INTERVENTION_CREATED
+  INTERVENTION_ASSIGNED
+  INTERVENTION_COMPLETED
+  INTERVENTION_VALIDATED
+}
+
+enum NotificationStatus {
+  UNREAD
+  READ
+}
+
+model Notification {
+  id            String             @id @default(cuid())
+  type          NotificationType
+  title         String
+  message       String
+  status        NotificationStatus @default(UNREAD)
+  dateCreation  DateTime           @default(now())
+  
+  // Relations
+  userId        String
+  user          User               @relation(fields: [userId], references: [id])
+  
+  interventionId String?
+  intervention  Intervention?      @relation(fields: [interventionId], references: [id])
+
+  @@map("notifications")
+}
