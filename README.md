@@ -1,68 +1,68 @@
-# Système de Gestion des Interventions
+# Intervention Management System
 
-Application web complète pour la gestion des demandes d'intervention technique avec authentification basée sur les rôles.
+A complete web application for managing technical intervention requests with role-based authentication.
 
-## 🚀 Fonctionnalités
+## 🚀 Features
 
-### Authentification et Gestion des rôles
-- **Système d'authentification sécurisé** avec NextAuth.js et JWT
-- **Rôles utilisateurs** : Admin, Utilisateur (employé), Technicien (Niveau 1, 2, 3)
-- **Interface différente** selon le rôle de l'utilisateur
+### Authentication and Role Management
+- **Secure authentication system** with NextAuth.js and JWT
+- **User roles**: Admin, User (employee), Technician (Level 1, 2, 3)
+- **Different interface** depending on the user's role
 
-### Dashboard par rôle
-- **Admin** : Gestion des demandes, statistiques, gestion des utilisateurs
-- **Utilisateur** : Création de demandes, suivi des demandes
-- **Technicien** : Interventions assignées, mise à jour des statuts
+### Role-based Dashboard
+- **Admin**: Request management, statistics, user management
+- **User**: Request creation, request tracking
+- **Technician**: Assigned interventions, status updates
 
-### Gestion des interventions
-- **Création de demandes** avec titre, description, priorité, équipement
-- **Workflow complet** : En attente → En cours → Terminée
-- **Affectation automatique** selon la priorité :
-  - Normale/Basse → Technicien N1
-  - Haute → Technicien N2
-  - Critique → Technicien N3
+### Intervention Management
+- **Request creation** with title, description, priority, equipment
+- **Full workflow**: Pending → In Progress → Completed
+- **Automatic assignment** based on priority:
+  - Normal/Low → Level 1 Technician
+  - High → Level 2 Technician
+  - Critical → Level 3 Technician
 
-### Statistiques et rapports
-- **Taux de résolution** et temps moyen de résolution
-- **Évolution des interventions** par mois
-- **Performance des techniciens**
+### Statistics and Reports
+- **Resolution rate** and average resolution time
+- **Intervention trends** by month
+- **Technician performance**
 
-## 🛠️ Technologies utilisées
+## 🛠️ Technologies Used
 
-- **Frontend** : Next.js 14, React, TypeScript
-- **Styling** : Tailwind CSS
-- **Base de données** : PostgreSQL
-- **ORM** : Prisma
-- **Authentification** : NextAuth.js
-- **Validation** : Zod
-- **Icons** : Heroicons
+- **Frontend**: Next.js 14, React, TypeScript
+- **Styling**: Tailwind CSS
+- **Database**: PostgreSQL
+- **ORM**: Prisma
+- **Authentication**: NextAuth.js
+- **Validation**: Zod
+- **Icons**: Heroicons
 
-## 📋 Prérequis
+## 📋 Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - PostgreSQL
-- npm ou yarn
+- npm or yarn
 
 ## 🔧 Installation
 
-1. **Cloner le projet**
+1. **Clone the project**
 ```bash
 git clone <repository-url>
 cd intervention
 ```
 
-2. **Installer les dépendances**
+2. **Install dependencies**
 ```bash
 npm install
 ```
 
-3. **Configuration de l'environnement**
+3. **Environment configuration**
 ```bash
-# Créer le fichier .env.local
+# Create the .env.local file
 touch .env.local
 ```
 
-Modifiez le fichier `.env.local` avec vos paramètres :
+Edit the `.env.local` file with your settings:
 ```env
 # Database - Local PostgreSQL
 DATABASE_URL="postgresql://postgres:password@localhost:5432/intervention_db"
@@ -75,94 +75,94 @@ NEXTAUTH_SECRET="your-super-secret-key-change-this-in-production"
 JWT_SECRET="your-jwt-secret-key-change-this-in-production"
 ```
 
-4. **Configuration de la base de données**
+4. **Database setup**
 ```bash
-# Générer le client Prisma
+# Generate the Prisma client
 npx prisma generate
 
-# Créer les tables
+# Create tables
 npx prisma db push
 
-# (Optionnel) Voir la base de données
+# (Optional) View the database
 npx prisma studio
 ```
 
-5. **Lancer l'application**
+5. **Start the application**
 ```bash
 npm run dev
 ```
 
-L'application sera accessible sur `http://localhost:3000`
+The application will be available at `http://localhost:3000`
 
-## 🗄️ Structure de la base de données
+## 🗄️ Database Structure
 
-### Tables principales
+### Main Tables
 
 #### Users
-- `id` : Identifiant unique
-- `nom`, `prenom` : Nom et prénom
-- `email` : Email unique
-- `telephone` : Numéro de téléphone
-- `role` : Rôle (ADMIN, USER, TECHNICIAN_N1, TECHNICIAN_N2, TECHNICIAN_N3)
-- `specialite` : Spécialité (pour les techniciens)
-- `statut` : Statut (ACTIF, INACTIF)
-- `motDePasse` : Mot de passe hashé
-- `dateCreation`, `dateModification` : Timestamps
+- `id`: Unique identifier
+- `nom`, `prenom`: Last and first name
+- `email`: Unique email
+- `telephone`: Phone number
+- `role`: Role (ADMIN, USER, TECHNICIAN_N1, TECHNICIAN_N2, TECHNICIAN_N3)
+- `specialite`: Specialty (for technicians)
+- `statut`: Status (ACTIVE, INACTIVE)
+- `motDePasse`: Hashed password
+- `dateCreation`, `dateModification`: Timestamps
 
 #### Interventions
-- `id` : Identifiant unique
-- `titre`, `description` : Détails de l'intervention
-- `priorite` : Priorité (BASSE, NORMALE, HAUTE, CRITIQUE)
-- `equipement` : Équipement concerné
-- `dateEcheance` : Date d'échéance
-- `statut` : Statut (EN_ATTENTE, EN_COURS, TERMINEE, ANNULEE)
-- `employeId` : Référence vers l'employé demandeur
-- `technicienId` : Référence vers le technicien assigné
-- `adminId` : Référence vers l'admin qui a validé
-- `dateCreation`, `dateCloture` : Timestamps
+- `id`: Unique identifier
+- `titre`, `description`: Intervention details
+- `priorite`: Priority (LOW, NORMAL, HIGH, CRITICAL)
+- `equipement`: Related equipment
+- `dateEcheance`: Due date
+- `statut`: Status (PENDING, IN_PROGRESS, COMPLETED, CANCELLED)
+- `employeId`: Reference to the requesting employee
+- `technicienId`: Reference to the assigned technician
+- `adminId`: Reference to the validating admin
+- `dateCreation`, `dateCloture`: Timestamps
 
-#### Statistiques
-- `mois`, `annee` : Période
-- `interventionsParMois` : Nombre d'interventions
-- `tempsMoyenResolution` : Temps moyen de résolution
-- `tauxResolution` : Taux de résolution en pourcentage
+#### Statistics
+- `mois`, `annee`: Period
+- `interventionsParMois`: Number of interventions
+- `tempsMoyenResolution`: Average resolution time
+- `tauxResolution`: Resolution rate as a percentage
 
-## 🔐 Rôles et permissions
+## 🔐 Roles and Permissions
 
 ### Admin
-- Accès complet à toutes les fonctionnalités
-- Gestion des utilisateurs
-- Validation et affectation des interventions
-- Consultation des statistiques
+- Full access to all features
+- User management
+- Intervention validation and assignment
+- Statistics consultation
 
-### Utilisateur (Employé)
-- Création de demandes d'intervention
-- Consultation de ses propres demandes
-- Suivi du statut des demandes
+### User (Employee)
+- Create intervention requests
+- View their own requests
+- Track request status
 
-### Technicien (N1, N2, N3)
-- Consultation des interventions assignées
-- Mise à jour du statut (En cours → Terminée)
-- Consultation des statistiques personnelles
+### Technician (L1, L2, L3)
+- View assigned interventions
+- Update status (In Progress → Completed)
+- View personal statistics
 
-## 📱 Interface utilisateur
+## 📱 User Interface
 
-### Design responsive
-- Interface moderne avec Tailwind CSS
-- Sidebar dynamique selon le rôle
-- Tableaux de bord personnalisés
-- Formulaires intuitifs
+### Responsive Design
+- Modern interface with Tailwind CSS
+- Dynamic sidebar based on role
+- Personalized dashboards
+- Intuitive forms
 
 ### Navigation
-- **Dashboard** : Vue d'ensemble selon le rôle
-- **Interventions** : Gestion des demandes (Admin)
-- **Utilisateurs** : Gestion des utilisateurs (Admin)
-- **Statistiques** : Rapports et analyses (Admin)
-- **Paramètres** : Configuration personnelle
+- **Dashboard**: Overview based on role
+- **Interventions**: Request management (Admin)
+- **Users**: User management (Admin)
+- **Statistics**: Reports and analytics (Admin)
+- **Settings**: Personal configuration
 
-## 🚀 Déploiement
+## 🚀 Deployment
 
-### Variables d'environnement de production
+### Production Environment Variables
 ```env
 DATABASE_URL="postgresql://..."
 NEXTAUTH_URL="https://your-domain.com"
@@ -170,62 +170,62 @@ NEXTAUTH_SECRET="your-production-secret"
 JWT_SECRET="your-production-jwt-secret"
 ```
 
-### Build de production
+### Production Build
 ```bash
 npm run build
 npm start
 ```
 
-## 🔧 Développement
+## 🔧 Development
 
-### Scripts disponibles
+### Available Scripts
 ```bash
-npm run dev          # Développement
-npm run build        # Build de production
-npm run start        # Démarrage production
+npm run dev          # Development
+npm run build        # Production build
+npm run start        # Production start
 npm run lint         # Linting
 ```
 
-### Structure des dossiers
+### Folder Structure
 ```
 src/
-├── app/                    # Pages Next.js 14
+├── app/                    # Next.js 14 pages
 │   ├── api/               # API routes
-│   ├── auth/              # Pages d'authentification
-│   ├── dashboard/         # Dashboard principal
-│   ├── interventions/     # Gestion des interventions
-│   ├── admin/             # Pages admin
-│   ├── user/              # Pages utilisateur
-│   └── technician/        # Pages technicien
-├── components/            # Composants React
-│   ├── layout/           # Layout et navigation
-│   ├── dashboard/        # Composants de dashboard
+│   ├── auth/              # Authentication pages
+│   ├── dashboard/         # Main dashboard
+│   ├── interventions/     # Intervention management
+│   ├── admin/             # Admin pages
+│   ├── user/              # User pages
+│   └── technician/        # Technician pages
+├── components/            # React components
+│   ├── layout/           # Layout and navigation
+│   ├── dashboard/        # Dashboard components
 │   └── providers/        # Providers (NextAuth)
-├── lib/                  # Utilitaires
-│   ├── auth.ts          # Configuration NextAuth
-│   └── prisma.ts        # Client Prisma
-└── types/               # Types TypeScript
+├── lib/                  # Utilities
+│   ├── auth.ts          # NextAuth configuration
+│   └── prisma.ts        # Prisma client
+└── types/               # TypeScript types
 ```
 
-## 🤝 Contribution
+## 🤝 Contributing
 
-1. Fork le projet
-2. Créer une branche feature (`git checkout -b feature/AmazingFeature`)
-3. Commit les changements (`git commit -m 'Add some AmazingFeature'`)
-4. Push vers la branche (`git push origin feature/AmazingFeature`)
-5. Ouvrir une Pull Request
+1. Fork the project
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-## 📄 Licence
+## 📄 License
 
-Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
+This project is licensed under the MIT License. See the `LICENSE` file for details.
 
 ## 🆘 Support
 
-Pour toute question ou problème :
-1. Consultez la documentation
-2. Vérifiez les issues existantes
-3. Créez une nouvelle issue avec les détails du problème
+For any questions or issues:
+1. Check the documentation
+2. Review existing issues
+3. Open a new issue with the problem details
 
 ---
 
-**Note** : Cette application est conçue pour la gestion d'interventions techniques dans un environnement professionnel. Assurez-vous de configurer correctement la sécurité et les permissions selon vos besoins spécifiques.
+**Note**: This application is designed for managing technical interventions in a professional environment. Make sure to properly configure security and permissions according to your specific needs.
